@@ -7,8 +7,8 @@
     <ProjectGuid>{64867628-7C9D-4209-9DF2-B62BD7325E9F}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TorchPlugin</RootNamespace>
-    <AssemblyName>TorchPlugin</AssemblyName>
+    <RootNamespace>GlobalEncounterUnlimiter</RootNamespace>
+    <AssemblyName>GlobalEncounterUnlimiter</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <LangVersion>7.3</LangVersion>

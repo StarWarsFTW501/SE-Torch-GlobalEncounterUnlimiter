@@ -17,7 +17,7 @@ namespace TorchPlugin
 {
     public class Plugin : TorchPluginBase, IWpfPlugin
     {
-        const string PLUGIN_NAME = "TorchPlugin";
+        const string PLUGIN_NAME = "GlobalEncounterUnlimiter";
 
         public static Plugin Instance;
 

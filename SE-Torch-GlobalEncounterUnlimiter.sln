@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34330.188
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SE-Torch-TorchPlugin", "SE-Torch-TorchPlugin.csproj", "{AA214F7C-D9E2-4DE4-9E84-CF10E04FF6C2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SE-Torch-GlobalEncounterUnlimiter", "SE-Torch-GlobalEncounterUnlimiter.csproj", "{AA214F7C-D9E2-4DE4-9E84-CF10E04FF6C2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
