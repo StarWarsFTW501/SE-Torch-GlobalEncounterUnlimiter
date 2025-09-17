@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<PluginManifest xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Name>SeTorchTemplate</Name>
+  <Guid>E26F4D9E-C42A-486C-AFFB-4D60A4EE5C23</Guid>
+  <Repository>SeTorchTemplate</Repository>
+  <Version>v1.0.0</Version>
+</PluginManifest>
