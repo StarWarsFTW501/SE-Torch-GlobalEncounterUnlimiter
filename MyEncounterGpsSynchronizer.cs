@@ -65,7 +65,7 @@ namespace GlobalEncounterUnlimiter
                 }
                 else
                 {
-                    Plugin.Instance.Logger.Error($"GPS Synchronizer image not found at '{path}'! It is strongly recommended to disable GPS generation for new players until any new Encounters have spawned with the plugin active.");
+                    Plugin.Instance.Logger.Error($"GPS Synchronizer image not found at '{path}'! Currently active encounters will not be synchronized.");
                 }
             }
             catch (Exception ex)
@@ -177,7 +177,7 @@ namespace GlobalEncounterUnlimiter
         /// <param name="identity"><see cref="MyIdentity"/> instance describing the joining player.</param>
         public void RegisterNewPlayerWithExistingIdentity(MyIdentity identity)
         {
-            if (Plugin.Instance.Config.GPSCreation)
+            if (Plugin.Instance.Config.GPSSynchronization)
                 _joinedPlayersQueue.Enqueue(identity);
         }
 
@@ -198,7 +198,7 @@ namespace GlobalEncounterUnlimiter
             {
                 if (!_fromDeserializedImage)
                 {
-                    Plugin.Instance.Logger.Warning($"GPS Synchronizer did not load from file! It is recommended to turn off GPS creation until all Encounters have been spawned with the plugin active.");
+                    Plugin.Instance.Logger.Info($"GPS Synchronizer did not load from file. Encounters spawned before this session's start will not be synchronized.");
                 }
 
                 // relates encounter entityids with entityids of grids that GPSes are bound to (unique per GPS, which is what matters)
@@ -227,7 +227,7 @@ namespace GlobalEncounterUnlimiter
                     counter++;
                 }
 
-                Plugin.Instance.Logger.Info($"Processed synchronization for {counter} new players.");
+                Plugin.Instance.Logger.Info($"Processed synchronization for {counter} new player(s).");
 
                 _waitingToSave = true;
             }

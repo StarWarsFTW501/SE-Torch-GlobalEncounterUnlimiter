@@ -8,6 +8,6 @@ namespace GlobalEncounterUnlimiter
 {
     internal interface IMyPluginConfig
     {
-        bool GPSCreation { get; set; }
+        bool GPSSynchronization { get; set; }
     }
 }

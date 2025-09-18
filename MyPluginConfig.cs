@@ -11,17 +11,17 @@ namespace GlobalEncounterUnlimiter
 {
     public class MyPluginConfig : INotifyPropertyChanged, IMyPluginConfig
     {
-        bool _gpsCreation;
+        bool _gpsSynchronization;
 
-        public bool GPSCreation
+        public bool GPSSynchronization
         {
-            get => _gpsCreation;
+            get => _gpsSynchronization;
             set
             {
-                if (_gpsCreation != value)
+                if (_gpsSynchronization != value)
                 {
-                    _gpsCreation = value;
-                    OnPropertyChanged(nameof(GPSCreation));
+                    _gpsSynchronization = value;
+                    OnPropertyChanged(nameof(GPSSynchronization));
                 }
             }
         }

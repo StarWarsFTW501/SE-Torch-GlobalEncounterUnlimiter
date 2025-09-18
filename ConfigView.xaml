@@ -29,8 +29,8 @@
         <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4" Text="GlobalEncounterUnlimiter" FontWeight="Bold" FontSize="16" VerticalAlignment="Center" Margin="5" />
 
         <!-- Enabled -->
-        <TextBlock Grid.Row="1" Grid.Column="0" Text="GPS On Join" VerticalAlignment="Center" Margin="5" />
-        <CheckBox Grid.Row="1" Grid.Column="1" Name="GPSCreation" IsChecked="{Binding GPSCreation}" ToolTip="Create missing GPS on join" Margin="5" />
+        <TextBlock Grid.Row="1" Grid.Column="0" Text="GPS Synchronization" VerticalAlignment="Center" Margin="5" />
+        <CheckBox Grid.Row="1" Grid.Column="1" Name="GPSSynchronization" IsChecked="{Binding GPSSynchronization}" ToolTip="Create missing GPS on join?" Margin="5" />
         <TextBlock Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="3" Text="Enable/Disable the creation of missing Unidentified Signals for newly joined players" Margin="5" />
 
         <!-- TODO: Add UI for your configuration properties, examples:
