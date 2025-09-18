@@ -2,25 +2,26 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
-namespace TorchPlugin
+namespace GlobalEncounterUnlimiter
 {
     public class MyPluginConfig : INotifyPropertyChanged, IMyPluginConfig
     {
-        bool _enabled;
+        bool _gpsCreation;
 
-        public bool Enabled
+        public bool GPSCreation
         {
-            get => _enabled;
+            get => _gpsCreation;
             set
             {
-                if (_enabled != value)
+                if (_gpsCreation != value)
                 {
-                    _enabled = value;
-                    OnPropertyChanged(nameof(Enabled));
+                    _gpsCreation = value;
+                    OnPropertyChanged(nameof(GPSCreation));
                 }
             }
         }
@@ -28,7 +29,7 @@ namespace TorchPlugin
         public event PropertyChangedEventHandler PropertyChanged;
         void OnPropertyChanged(string propertyName)
         {
-            PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

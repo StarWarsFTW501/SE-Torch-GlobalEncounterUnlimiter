@@ -8,7 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
-namespace TorchPlugin
+namespace GlobalEncounterUnlimiter
 {
     internal class PersistentConfig<T> : IDisposable where T : class, INotifyPropertyChanged, new()
     {
@@ -32,8 +32,7 @@ namespace TorchPlugin
 
                     _data = value;
 
-                    if (_data != null)
-                        _data.PropertyChanged += OnPropertyChanged;
+                    _data.PropertyChanged += OnPropertyChanged;
                 }
             }
         }
@@ -42,7 +41,7 @@ namespace TorchPlugin
 
         PersistentConfig(T data, string path)
         {
-            _data = data;
+            Data = data;
             _path = path;
         }
 
@@ -55,7 +54,7 @@ namespace TorchPlugin
                 {
                     var serializer = new XmlSerializer(typeof(T));
                     using (var streamReader = File.OpenText(path))
-                        return new PersistentConfig<T>(serializer.Deserialize(streamReader) as T, path);
+                        return new PersistentConfig<T>((T)serializer.Deserialize(streamReader), path);
                 }
             }
             catch (Exception e)
@@ -76,7 +75,7 @@ namespace TorchPlugin
 
             logger.Info($"Configuration file does not exist at {path} - Creating default...");
 
-            var config = new PersistentConfig<T>(default, path);
+            var config = new PersistentConfig<T>(new T(), path);
 
             config.SaveNow();
 
@@ -93,7 +92,7 @@ namespace TorchPlugin
             if (_saveTimer == null)
                 _saveTimer = new Timer(_ => SaveNow());
 
-            _saveTimer.Change(SAVE_DELAY_MS, Timeout.Infinite);
+            _saveTimer.Change(SAVE_DELAY_MS, -1);
         }
         /// <summary>
         /// Immediately saves the config and stops any waiting delayed saves.

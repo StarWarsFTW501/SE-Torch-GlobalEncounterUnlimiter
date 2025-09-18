@@ -7,7 +7,7 @@ using Torch.Commands;
 using Torch.Commands.Permissions;
 using VRage.Game.ModAPI;
 
-namespace TorchPlugin
+namespace GlobalEncounterUnlimiter
 {
     public class MyCommands : CommandModule
     {

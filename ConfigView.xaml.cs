@@ -1,6 +1,6 @@
 using System.Windows.Controls;
 
-namespace TorchPlugin
+namespace GlobalEncounterUnlimiter
 {
     // ReSharper disable once UnusedType.Global
     // ReSharper disable once RedundantExtendsListEntry

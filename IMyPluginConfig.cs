@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TorchPlugin
+namespace GlobalEncounterUnlimiter
 {
     internal interface IMyPluginConfig
     {
-        bool Enabled { get; set; }
+        bool GPSCreation { get; set; }
     }
 }
