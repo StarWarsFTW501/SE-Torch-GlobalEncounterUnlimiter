@@ -84,88 +84,8 @@ namespace GlobalEncounterUnlimiter
                     }
                     endingPatterns.Clear();
                 }
-
                 matchingPatterns.Clear();
             }
-        }
-
-
-
-
-
-
-
-
-
-        static string GetILInstructionLogEntry(OpCode code, object operand)
-        {
-            string value;
-            if (operand is MethodInfo mi)
-                value = $"Method info: {GetMethodStringInfo(mi)} (metadata token {mi.MetadataToken})";
-            else if (operand is FieldInfo fi)
-                value = $"Field info: {GetFieldStringInfo(fi)} in type {fi.DeclaringType.FullName} (metadata token {fi.MetadataToken})";
-            else if (operand is Type t)
-                value = $"Type info: {GetTypeInformationRecursive(t)} (metadata token {t.MetadataToken})";
-            else if (operand == null)
-                value = "<no operand>";
-            else value = $"Raw operand: {operand} (Type: {GetTypeInformationRecursive(operand.GetType())})";
-            return $"Instruction: {code}{new string(' ', 14 - code.ToString().Length)}{value}";
-        }
-        public static string GetMethodStringInfo(MethodBase method)
-        {
-            if (method == null)
-                return "indeterminate method";
-
-            string outputPrefix = (
-                method.IsPublic ? "public" :
-                method.IsPrivate ? "private" :
-                method.IsFamily ? "protected" :
-                method.IsAssembly ? "internal" : "") + (
-
-                method.IsStatic ? " static" : " instance") + (
-
-                method is ConstructorInfo ? " constructor" :
-                    (method as MethodInfo).ReturnType.IsVoid() ? " void" :
-                    (" " + GetTypeInformationRecursive((method as MethodInfo).ReturnType)));
-
-            var parameters = method.GetParameters();
-            string parameterDescription = "";
-            if (parameters.Length != 0)
-            {
-                parameterDescription = GetParameterDescription(parameters[0]);
-                for (int i = 1; i < parameters.Length; i++)
-                    parameterDescription += $", {GetParameterDescription(parameters[i])}";
-            }
-
-
-            return $"{outputPrefix} {method.DeclaringType?.FullName ?? "[indeterminate owner]"}.{((method is MethodInfo methodInfo) ? methodInfo.Name : (method as ConstructorInfo).Name)}({parameterDescription})";
-        }
-        public static string GetFieldStringInfo(FieldInfo field)
-        {
-            if (field == null)
-                return "indeterminate field";
-
-            string outputPrefix = (
-                field.IsPublic ? "public" :
-                field.IsPrivate ? "private" :
-                field.IsFamily ? "protected" :
-                field.IsAssembly ? "internal" : "") + (
-
-                field.IsStatic ? " static " : " instance ") +
-
-                GetTypeInformationRecursive(field.FieldType);
-
-            return $"{outputPrefix} {field.Name}";
-        }
-        static string GetParameterDescription(ParameterInfo parameter)
-        {
-            return $"{(parameter.ParameterType.IsByRef ? parameter.IsOut ? "out " : "ref " : parameter.IsIn ? "in " : "")}{GetTypeInformationRecursive(parameter.ParameterType)}";
-        }
-        static string GetTypeInformationRecursive(Type type)
-        {
-            if (type == null)
-                return null;
-            return $"{type.Namespace}.{type.Name}{(type.IsGenericType ? $"<{string.Join(", ", type.GetGenericArguments().Select(t => GetTypeInformationRecursive(t) ?? "indeterminate generic"))}>" : "")}";
         }
     }
 }
