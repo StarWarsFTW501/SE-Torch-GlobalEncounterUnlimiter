@@ -628,7 +628,6 @@
     <Compile Include="Plugin.cs" />
     <Compile Include="ConfigView.xaml.cs" />
     <Compile Include="MyLogger.cs" />
-    <Compile Include="IMyPluginConfig.cs" />
     <Compile Include="MyPluginConfig.cs" />
     <Compile Include="PersistentConfig.cs" />
   </ItemGroup>

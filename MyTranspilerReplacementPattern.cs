@@ -29,7 +29,7 @@ namespace GlobalEncounterUnlimiter
         public int InstructionsToCopyBefore { get; private set; } = -1;
 
         int _matchedCount = 0;
-        bool _hasEnded = false;
+        public bool HasFinished { get; private set; }
 
         /// <summary>
         /// Creates a definition of a sequence of IL <see cref="CodeInstruction"/>s to replace with a new sequence.
@@ -60,7 +60,7 @@ namespace GlobalEncounterUnlimiter
         /// <returns>The match result of this instruction check.</returns>
         public MyTranspilerReplacementResult CheckMatch(CodeInstruction instruction, int bufferSize)
         {
-            if (_hasEnded)
+            if (HasFinished)
             {
                 return MyTranspilerReplacementResult.NOMATCH;
             }
@@ -71,7 +71,7 @@ namespace GlobalEncounterUnlimiter
                     InstructionsToCopyBefore = bufferSize - 1;
                 if (_matchedCount == TotalCount)
                 {
-                    _hasEnded = true;
+                    HasFinished = true;
                     _matchedCount = 0;
                     return MyTranspilerReplacementResult.END;
                 }

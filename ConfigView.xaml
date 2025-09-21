@@ -12,7 +12,9 @@
 
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" SharedSizeGroup="Labels" />
-            <ColumnDefinition Width="Auto" SharedSizeGroup="Checkboxes" />
+            <ColumnDefinition Width="Auto" SharedSizeGroup="Inputs_A" />
+            <ColumnDefinition Width="Auto" SharedSizeGroup="Inputs_B" />
+            <ColumnDefinition Width="Auto" SharedSizeGroup="Inputs_C" />
             <ColumnDefinition Width="Auto" SharedSizeGroup="Descriptions" />
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="Auto" SharedSizeGroup="Buttons" />
@@ -22,16 +24,47 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <!-- TODO: Add row definitions if you start using new rows -->
         </Grid.RowDefinitions>
 
         <!-- Title -->
-        <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4" Text="GlobalEncounterUnlimiter" FontWeight="Bold" FontSize="16" VerticalAlignment="Center" Margin="5" />
+        <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4" Text="Global Encounter Unlimiter" FontWeight="Bold" FontSize="16" VerticalAlignment="Center" Margin="5" />
 
         <!-- Enabled -->
         <TextBlock Grid.Row="1" Grid.Column="0" Text="GPS Synchronization" VerticalAlignment="Center" Margin="5" />
-        <CheckBox Grid.Row="1" Grid.Column="1" Name="GPSSynchronization" IsChecked="{Binding GPSSynchronization}" ToolTip="Create missing GPS on join?" Margin="5" />
-        <TextBlock Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="3" Text="Enable/Disable the creation of missing Unidentified Signals for newly joined players" Margin="5" />
+        <CheckBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" HorizontalAlignment="Center" Name="GPSSynchronization" IsChecked="{Binding GPSSynchronization}" ToolTip="Create missing GPS on join?" Margin="5" />
+        <TextBlock Grid.Row="1" Grid.Column="4" Grid.ColumnSpan="3" Text="Enable/Disable the creation of missing Unidentified Signals for newly joined players" Margin="5" />
+        
+        <!-- Restrict spawning locations -->
+        <TextBlock Grid.Row="2" Grid.Column="0" Text="Location restriction" VerticalAlignment="Center" Margin="5" />
+        <CheckBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" HorizontalAlignment="Center" Name="LocationRestriction" IsChecked="{Binding LocationRestriction}" ToolTip="Restrict spawning locations of Encounters?" Margin="5" />
+        <TextBlock Grid.Row="2" Grid.Column="4" Grid.ColumnSpan="3" Text="Enable/Disable the restriction of locations Encounters can spawn in" Margin="5" />
+
+        <!-- Spawn sphere center -->
+        <TextBlock Grid.Row="3" Grid.Column="0" Text="Spawn around" VerticalAlignment="Center" Margin="5" Visibility="{Binding LocationRestriction}" />
+        <TextBox Grid.Row="3" Grid.Column="1" Name="SpawnCenterX" Text="{Binding LocationRestrictionCenterX}" ToolTip="Center X coordinate" Visibility="{Binding LocationRestriction}" Margin="5,5,2,5"/>
+        <TextBox Grid.Row="3" Grid.Column="2" Name="SpawnCenterY" Text="{Binding LocationRestrictionCenterY}" ToolTip="Center Y coordinate" Visibility="{Binding LocationRestriction}" Margin="2,5"/>
+        <TextBox Grid.Row="3" Grid.Column="3" Name="SpawnCenterZ" Text="{Binding LocationRestrictionCenterZ}" ToolTip="Center Z coordinate" Visibility="{Binding LocationRestriction}" Margin="2,5,5,5"/>
+        <TextBlock Grid.Row="3" Grid.Column="4" Grid.ColumnSpan="3" Text="Center of the region in which Encounters can spawn in" VerticalAlignment="Center" Margin="5" Visibility="{Binding LocationRestriction}" />
+
+        <!-- Spawn sphere min radius -->
+        <TextBlock Grid.Row="4" Grid.Column="0" Text="Minimum radius (m)" VerticalAlignment="Center" Margin="5" Visibility="{Binding LocationRestriction}" />
+        <TextBox Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3" Name="MinRadius" Text="{Binding LocationRestrictionMinRadius}" ToolTip="Mnimum spawning radius" Visibility="{Binding LocationRestriction}" Margin="5" />
+        <TextBlock Grid.Row="4" Grid.Column="4" Grid.ColumnSpan="3" Text="The closest distance (meters) a Global Encounter can spawn to the center location" VerticalAlignment="Center" Margin="5" Visibility="{Binding LocationRestriction}" />
+
+        <!-- Spawn sphere min radius -->
+        <TextBlock Grid.Row="5" Grid.Column="0" Text="Maximum radius (m)" VerticalAlignment="Center" Margin="5" Visibility="{Binding LocationRestriction}" />
+        <TextBox Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3" Name="MaxRadius" Text="{Binding LocationRestrictionMaxRadius}" ToolTip="Maximum spawning radius" Visibility="{Binding LocationRestriction}" Margin="5" />
+        <TextBlock Grid.Row="5" Grid.Column="4" Grid.ColumnSpan="3" Text="The furthest distance (meters) a Global Encounter can spawn from the center location" VerticalAlignment="Center" Margin="5" Visibility="{Binding LocationRestriction}" />
+        
+        <!-- Planet spawns -->
+        <TextBlock Grid.Row="6" Grid.Column="0" Text="Allow planets" VerticalAlignment="Center" Margin="5" Visibility="{Binding LocationRestriction}" />
+        <CheckBox Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="3" HorizontalAlignment="Center" Name="AllowPlanets" IsChecked="{Binding LocationRestrictionAllowPlanets}" ToolTip="Allow spawns around planets?" Visibility="{Binding LocationRestriction}" Margin="5"/>
+        <TextBlock Grid.Row="6" Grid.Column="4" Grid.ColumnSpan="3" Text="Enable/Disable the spawning of Encounters in orbits of planets" VerticalAlignment="Center" Margin="5" Visibility="{Binding LocationRestriction}"/>
 
         <!-- TODO: Add UI for your configuration properties, examples:
 

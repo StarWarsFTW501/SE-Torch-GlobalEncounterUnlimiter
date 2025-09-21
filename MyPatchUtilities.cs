@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media.Media3D;
 
 namespace GlobalEncounterUnlimiter
 {
@@ -86,6 +87,33 @@ namespace GlobalEncounterUnlimiter
                 }
                 matchingPatterns.Clear();
             }
+
+            int c = patterns.Count(p => !p.HasFinished);
+            if (c != 0)
+                throw new Exception($"Could not find IL matching {c} of {patterns.Length} patterns!");
         }
+        /// <summary>
+        /// Attempts a parse of a string representation of a GPS coordinate into its XYZ coordinates.
+        /// </summary>
+        /// <param name="value">String representation of the GPS coordinate.</param>
+        /// <param name="gpsLocation">Resulting XYZ coordinates encoded by the GPS.</param>
+        /// <returns><see cref="true"/> if successfully parsed, <see cref="false"/> otherwise</returns>
+        public static bool TryParseGPS(string value, out Vector3D gpsLocation)
+        {
+            var split = value.Split(':');
+            if ((split.Length == 7 || split.Length == 8) && split[0] == "GPS" && double.TryParse(split[2], out double x) && double.TryParse(split[3], out double y) && double.TryParse(split[4], out double z))
+            {
+                gpsLocation = new Vector3D(x, y, z);
+                return true;
+            }
+            gpsLocation = default;
+            return false;
+        }
+        /// <summary>
+        /// Abstracts away the long IL of constructing the center vector from the plugin config.
+        /// </summary>
+        /// <returns>The center vector around which the restriction area is located.</returns>
+        public static Vector3D GetSpawnRestrictionCenter()
+            => new Vector3D(Plugin.Instance.Config.LocationRestrictionCenterX, Plugin.Instance.Config.LocationRestrictionCenterY, Plugin.Instance.Config.LocationRestrictionCenterZ);
     }
 }

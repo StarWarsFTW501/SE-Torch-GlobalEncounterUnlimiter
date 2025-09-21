@@ -32,7 +32,7 @@ namespace GlobalEncounterUnlimiter
 
         internal MyLogger Logger { get; private set; }
 
-        internal MyPluginConfig Config => _config?.Data;
+        public MyPluginConfig Config => _config?.Data;
         private PersistentConfig<MyPluginConfig> _config;
 
         [MethodImpl(MethodImplOptions.NoInlining)]

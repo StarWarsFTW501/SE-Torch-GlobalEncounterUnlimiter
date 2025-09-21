@@ -1,8 +1,10 @@
 ﻿using HarmonyLib;
+using Sandbox.Definitions;
 using Sandbox.Game.Multiplayer;
 using Sandbox.Game.Screens.Helpers;
 using Sandbox.Game.World;
 using SpaceEngineers.Game.SessionComponents;
+using SteamKit2.GC.Dota.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +13,7 @@ using System.Text;
 using System.Threading.Tasks;
 using VRage.Game;
 using VRage.Utils;
+using VRageMath;
 
 namespace GlobalEncounterUnlimiter
 {
@@ -122,6 +125,133 @@ namespace GlobalEncounterUnlimiter
                         // .. still execute that clamp
                     })
                 );
+        #endregion
+
+        #region Spawn limiting
+        [HarmonyTranspiler]
+        [HarmonyPatch(typeof(MyGlobalEncountersGenerator), "UpdateBeforeSimulation")]
+        public static IEnumerable<CodeInstruction> MyGlobalEncountersGenerator_UpdateBeforeSimulation_Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator ilGenerator)
+        {
+            var dontExecuteLabel = ilGenerator.DefineLabel();
+            var executeLabel = ilGenerator.DefineLabel();
+            return MyPatchUtilities.ExecuteTranspilerPatch(instructions,
+                new MyTranspilerReplacementPattern(
+                    targetPattern:
+                    new List<CodeInstruction>()
+                    {
+                        new CodeInstruction(OpCodes.Ldc_R4, 0f), // lower bound for random selection
+                        new CodeInstruction(OpCodes.Ldc_R4, 1f), // upper bound for random selection
+                        new CodeInstruction(OpCodes.Call, typeof(MyUtils).GetMethod("GetRandomFloat", new Type[] { typeof(float), typeof(float) })) // get the random value
+                    },
+                    replacementSequence:
+                    new List<CodeInstruction>()
+                    {
+                        new CodeInstruction(OpCodes.Ldsfld, typeof(Plugin).GetField("Instance")), // reference our plugin's instance
+                        new CodeInstruction(OpCodes.Callvirt, typeof(Plugin).GetMethod("get_Config")), // reference our config
+                        new CodeInstruction(OpCodes.Callvirt, typeof(MyPluginConfig).GetMethod("get_LocationRestriction")), // get if we do restriction
+                        new CodeInstruction(OpCodes.Brfalse, executeLabel), // jump and execute original IL
+                        new CodeInstruction(OpCodes.Ldsfld, typeof(Plugin).GetField("Instance")), // reference our plugin's instance
+                        new CodeInstruction(OpCodes.Callvirt, typeof(Plugin).GetMethod("get_Config")), // reference our config
+                        new CodeInstruction(OpCodes.Callvirt, typeof(MyPluginConfig).GetMethod("get_LocationRestrictionAllowPlanets")), // get if we allow planet orbit spawns
+                        new CodeInstruction(OpCodes.Brtrue, executeLabel), // jump to original IL and allow planet spawn
+                        new CodeInstruction(OpCodes.Ldc_R4, 1.1f), // load above 1 to avoid planet spawn
+                        new CodeInstruction(OpCodes.Br, dontExecuteLabel), // jump over original code to not trigger random selection
+                        new CodeInstruction(OpCodes.Ldc_R4, 0f) { labels = { executeLabel } }, // lower bound for random selection, with target to jump to
+                        new CodeInstruction(OpCodes.Ldc_R4, 1f), // upper bound for random selection
+                        new CodeInstruction(OpCodes.Call, typeof(MyUtils).GetMethod("GetRandomFloat", new Type[] { typeof(float), typeof(float) })), // get the random value
+                        new CodeInstruction(OpCodes.Nop) { labels = { dontExecuteLabel } }, // nop jump target
+                    }));
+        }
+        [HarmonyTranspiler]
+        [HarmonyPatch(typeof(MyGlobalEncountersGenerator), "GetSpawnPositionInSpace")]
+        public static IEnumerable<CodeInstruction> MyGlobalEncountersGenerator_GetSpawnPositionInSpace_Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator ilGenerator)
+        {
+            var min_endLabel = ilGenerator.DefineLabel();
+            var max_endLabel = ilGenerator.DefineLabel();
+            var use_dontExecuteLabel = ilGenerator.DefineLabel();
+            var use_executeLabel = ilGenerator.DefineLabel();
+            var radius = ilGenerator.DeclareLocal(typeof(double));
+            return MyPatchUtilities.ExecuteTranspilerPatch(instructions,
+                // #1 - min distance adjustment
+                new MyTranspilerReplacementPattern(
+                    targetPattern:
+                    new List<CodeInstruction>()
+                    {
+                        new CodeInstruction(OpCodes.Ldfld, typeof(Sandbox.Definitions.GlobalEncounterSettings).GetField("MinDistanceFromCenter"))
+                    },
+                    replacementSequence:
+                    new List<CodeInstruction>()
+                    {
+                        new CodeInstruction(OpCodes.Ldfld, typeof(Sandbox.Definitions.GlobalEncounterSettings).GetField("MinDistanceFromCenter")),
+                        new CodeInstruction(OpCodes.Ldsfld, typeof(Plugin).GetField("Instance")), // reference our plugin's instance
+                        new CodeInstruction(OpCodes.Callvirt, typeof(Plugin).GetMethod("get_Config")), // reference our config
+                        new CodeInstruction(OpCodes.Callvirt, typeof(MyPluginConfig).GetMethod("get_LocationRestriction")), // get if we do restriction
+                        new CodeInstruction(OpCodes.Brfalse, min_endLabel), // jump to after this alteration
+                        new CodeInstruction(OpCodes.Pop), // remove the original min distance
+                        new CodeInstruction(OpCodes.Ldsfld, typeof(Plugin).GetField("Instance")),
+                        new CodeInstruction(OpCodes.Callvirt, typeof(Plugin).GetMethod("get_Config")), // reference our config
+                        new CodeInstruction(OpCodes.Callvirt, typeof(MyPluginConfig).GetMethod("get_LocationRestrictionMinRadius")), // get the minimumm distance
+                        new CodeInstruction(OpCodes.Nop) { labels = { min_endLabel } } // nop jump target if we aren't doing this
+                    }),
+                // #2 - max distance adjustment
+                new MyTranspilerReplacementPattern(
+                    targetPattern:
+                    new List<CodeInstruction>()
+                    {
+                        new CodeInstruction(OpCodes.Ldfld, typeof(Sandbox.Definitions.GlobalEncounterSettings).GetField("MaxDistanceFromCenter"))
+                    },
+                    replacementSequence:
+                    new List<CodeInstruction>()
+                    {
+                        new CodeInstruction(OpCodes.Ldfld, typeof(Sandbox.Definitions.GlobalEncounterSettings).GetField("MaxDistanceFromCenter")),
+                        new CodeInstruction(OpCodes.Ldsfld, typeof(Plugin).GetField("Instance")), // reference our plugin's instance
+                        new CodeInstruction(OpCodes.Callvirt, typeof(Plugin).GetMethod("get_Config")), // reference our config
+                        new CodeInstruction(OpCodes.Callvirt, typeof(MyPluginConfig).GetMethod("get_LocationRestriction")), // get if we do restriction
+                        new CodeInstruction(OpCodes.Brfalse, max_endLabel), // jump to after this alteration
+                        new CodeInstruction(OpCodes.Ldsfld, typeof(Plugin).GetField("Instance")),
+                        new CodeInstruction(OpCodes.Callvirt, typeof(Plugin).GetMethod("get_Config")), // reference our config
+                        new CodeInstruction(OpCodes.Callvirt, typeof(MyPluginConfig).GetMethod("get_LocationRestrictionMaxRadius")), // get the maximum distance
+                        new CodeInstruction(OpCodes.Call, typeof(Math).GetMethod("Min", new Type[] { typeof(int), typeof(int) })), // force the maximum
+                        new CodeInstruction(OpCodes.Nop) { labels = { max_endLabel } } // nop jump target if we aren't doing this
+                    }),
+                // #3 - redirect radius store into our own variable
+                new MyTranspilerReplacementPattern(
+                    targetPattern:
+                    new List<CodeInstruction>()
+                    {
+                        new CodeInstruction(OpCodes.Add), // adds the group's spawn radius to the random value
+                        new CodeInstruction(OpCodes.Stloc_S) // stores radius in unknown local
+                    },
+                    replacementSequence:
+                    new List<CodeInstruction>()
+                    {
+                        new CodeInstruction(OpCodes.Add), // perform the add
+                        new CodeInstruction(OpCodes.Conv_R8), // directly convert to double
+                        new CodeInstruction(OpCodes.Stloc, radius) // store in our local
+                    }),
+                // #4 - alter sphere creation to be centered on our defined center
+                new MyTranspilerReplacementPattern(
+                    targetPattern:
+                    new List<CodeInstruction>()
+                    {
+                        new CodeInstruction(OpCodes.Ldsfld, typeof(Vector3D).GetField("Zero")), // loads zero vector
+                        new CodeInstruction(OpCodes.Ldloc_S), // loads radius
+                        new CodeInstruction(OpCodes.Conv_R8) // converts radius to double
+                    },
+                    replacementSequence:
+                    new List<CodeInstruction>()
+                    {
+                        new CodeInstruction(OpCodes.Ldsfld, typeof(Plugin).GetField("Instance")), // reference our plugin's instance
+                        new CodeInstruction(OpCodes.Callvirt, typeof(Plugin).GetMethod("get_Config")), // reference our config
+                        new CodeInstruction(OpCodes.Callvirt, typeof(MyPluginConfig).GetMethod("get_LocationRestriction")), // get if we do restriction
+                        new CodeInstruction(OpCodes.Brfalse, use_dontExecuteLabel), // jump to after this alteration
+                        new CodeInstruction(OpCodes.Call, typeof(MyPatchUtilities).GetMethod("GetSpawnRestrictionCenter")), // load center vector
+                        new CodeInstruction(OpCodes.Br, use_executeLabel), // jump to last instruction - don't execute zero vector retrieval
+                        new CodeInstruction(OpCodes.Ldsfld, typeof(Vector3D).GetField("Zero")) { labels = { use_dontExecuteLabel } }, // jump target for no alteration code path
+                        new CodeInstruction(OpCodes.Ldloc, radius) { labels = { use_executeLabel } } // load radius (no need to convert, we already did)
+                    })
+                );
+        }
         #endregion
     }
 }
