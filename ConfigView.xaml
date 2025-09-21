@@ -7,7 +7,9 @@
              xmlns:local="clr-namespace:GlobalEncounterUnlimiter" d:DataContext="{d:DesignInstance Type=local:MyPluginConfig}"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
-
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+    </UserControl.Resources>
     <Grid>
 
         <Grid.ColumnDefinitions>
@@ -45,26 +47,26 @@
         <TextBlock Grid.Row="2" Grid.Column="4" Grid.ColumnSpan="3" Text="Enable/Disable the restriction of locations Encounters can spawn in" Margin="5" />
 
         <!-- Spawn sphere center -->
-        <TextBlock Grid.Row="3" Grid.Column="0" Text="Spawn around" VerticalAlignment="Center" Margin="5" Visibility="{Binding LocationRestriction}" />
-        <TextBox Grid.Row="3" Grid.Column="1" Name="SpawnCenterX" Text="{Binding LocationRestrictionCenterX}" ToolTip="Center X coordinate" Visibility="{Binding LocationRestriction}" Margin="5,5,2,5"/>
-        <TextBox Grid.Row="3" Grid.Column="2" Name="SpawnCenterY" Text="{Binding LocationRestrictionCenterY}" ToolTip="Center Y coordinate" Visibility="{Binding LocationRestriction}" Margin="2,5"/>
-        <TextBox Grid.Row="3" Grid.Column="3" Name="SpawnCenterZ" Text="{Binding LocationRestrictionCenterZ}" ToolTip="Center Z coordinate" Visibility="{Binding LocationRestriction}" Margin="2,5,5,5"/>
-        <TextBlock Grid.Row="3" Grid.Column="4" Grid.ColumnSpan="3" Text="Center of the region in which Encounters can spawn in" VerticalAlignment="Center" Margin="5" Visibility="{Binding LocationRestriction}" />
+        <TextBlock Grid.Row="3" Grid.Column="0" Text="Spawn around" VerticalAlignment="Center" Margin="5" Visibility="{Binding LocationRestriction, Converter={StaticResource BooleanToVisibilityConverter}}" />
+        <TextBox Grid.Row="3" Grid.Column="1" Name="SpawnCenterX" Text="{Binding LocationRestrictionCenterX}" ToolTip="Center X coordinate" Visibility="{Binding LocationRestriction, Converter={StaticResource BooleanToVisibilityConverter}}" Margin="5,5,2,5"/>
+        <TextBox Grid.Row="3" Grid.Column="2" Name="SpawnCenterY" Text="{Binding LocationRestrictionCenterY}" ToolTip="Center Y coordinate" Visibility="{Binding LocationRestriction, Converter={StaticResource BooleanToVisibilityConverter}}" Margin="2,5"/>
+        <TextBox Grid.Row="3" Grid.Column="3" Name="SpawnCenterZ" Text="{Binding LocationRestrictionCenterZ}" ToolTip="Center Z coordinate" Visibility="{Binding LocationRestriction, Converter={StaticResource BooleanToVisibilityConverter}}" Margin="2,5,5,5"/>
+        <TextBlock Grid.Row="3" Grid.Column="4" Grid.ColumnSpan="3" Text="Center of the region in which Encounters can spawn in" VerticalAlignment="Center" Margin="5" Visibility="{Binding LocationRestriction, Converter={StaticResource BooleanToVisibilityConverter}}" />
 
         <!-- Spawn sphere min radius -->
-        <TextBlock Grid.Row="4" Grid.Column="0" Text="Minimum radius (m)" VerticalAlignment="Center" Margin="5" Visibility="{Binding LocationRestriction}" />
-        <TextBox Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3" Name="MinRadius" Text="{Binding LocationRestrictionMinRadius}" ToolTip="Mnimum spawning radius" Visibility="{Binding LocationRestriction}" Margin="5" />
-        <TextBlock Grid.Row="4" Grid.Column="4" Grid.ColumnSpan="3" Text="The closest distance (meters) a Global Encounter can spawn to the center location" VerticalAlignment="Center" Margin="5" Visibility="{Binding LocationRestriction}" />
+        <TextBlock Grid.Row="4" Grid.Column="0" Text="Minimum radius (m)" VerticalAlignment="Center" Margin="5" Visibility="{Binding LocationRestriction, Converter={StaticResource BooleanToVisibilityConverter}}" />
+        <TextBox Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3" Name="MinRadius" Text="{Binding LocationRestrictionMinRadius}" ToolTip="Mnimum spawning radius" Visibility="{Binding LocationRestriction, Converter={StaticResource BooleanToVisibilityConverter}}" Margin="5" />
+        <TextBlock Grid.Row="4" Grid.Column="4" Grid.ColumnSpan="3" Text="The closest distance (meters) a Global Encounter can spawn to the center location" VerticalAlignment="Center" Margin="5" Visibility="{Binding LocationRestriction, Converter={StaticResource BooleanToVisibilityConverter}}" />
 
         <!-- Spawn sphere min radius -->
-        <TextBlock Grid.Row="5" Grid.Column="0" Text="Maximum radius (m)" VerticalAlignment="Center" Margin="5" Visibility="{Binding LocationRestriction}" />
-        <TextBox Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3" Name="MaxRadius" Text="{Binding LocationRestrictionMaxRadius}" ToolTip="Maximum spawning radius" Visibility="{Binding LocationRestriction}" Margin="5" />
-        <TextBlock Grid.Row="5" Grid.Column="4" Grid.ColumnSpan="3" Text="The furthest distance (meters) a Global Encounter can spawn from the center location" VerticalAlignment="Center" Margin="5" Visibility="{Binding LocationRestriction}" />
+        <TextBlock Grid.Row="5" Grid.Column="0" Text="Maximum radius (m)" VerticalAlignment="Center" Margin="5" Visibility="{Binding LocationRestriction, Converter={StaticResource BooleanToVisibilityConverter}}" />
+        <TextBox Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3" Name="MaxRadius" Text="{Binding LocationRestrictionMaxRadius}" ToolTip="Maximum spawning radius" Visibility="{Binding LocationRestriction, Converter={StaticResource BooleanToVisibilityConverter}}" Margin="5" />
+        <TextBlock Grid.Row="5" Grid.Column="4" Grid.ColumnSpan="3" Text="The furthest distance (meters) a Global Encounter can spawn from the center location" VerticalAlignment="Center" Margin="5" Visibility="{Binding LocationRestriction, Converter={StaticResource BooleanToVisibilityConverter}}" />
         
         <!-- Planet spawns -->
-        <TextBlock Grid.Row="6" Grid.Column="0" Text="Allow planets" VerticalAlignment="Center" Margin="5" Visibility="{Binding LocationRestriction}" />
-        <CheckBox Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="3" HorizontalAlignment="Center" Name="AllowPlanets" IsChecked="{Binding LocationRestrictionAllowPlanets}" ToolTip="Allow spawns around planets?" Visibility="{Binding LocationRestriction}" Margin="5"/>
-        <TextBlock Grid.Row="6" Grid.Column="4" Grid.ColumnSpan="3" Text="Enable/Disable the spawning of Encounters in orbits of planets" VerticalAlignment="Center" Margin="5" Visibility="{Binding LocationRestriction}"/>
+        <TextBlock Grid.Row="6" Grid.Column="0" Text="Allow planets" VerticalAlignment="Center" Margin="5" Visibility="{Binding LocationRestriction, Converter={StaticResource BooleanToVisibilityConverter}}" />
+        <CheckBox Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="3" HorizontalAlignment="Center" Name="AllowPlanets" IsChecked="{Binding LocationRestrictionAllowPlanets}" ToolTip="Allow spawns around planets?" Visibility="{Binding LocationRestriction, Converter={StaticResource BooleanToVisibilityConverter}}" Margin="5"/>
+        <TextBlock Grid.Row="6" Grid.Column="4" Grid.ColumnSpan="3" Text="Enable/Disable the spawning of Encounters in orbits of planets" VerticalAlignment="Center" Margin="5" Visibility="{Binding LocationRestriction, Converter={StaticResource BooleanToVisibilityConverter}}"/>
 
         <!-- TODO: Add UI for your configuration properties, examples:
 
