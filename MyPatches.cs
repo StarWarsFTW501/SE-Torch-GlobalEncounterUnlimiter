@@ -94,37 +94,46 @@ namespace GlobalEncounterUnlimiter
         #region Hardcoded timer limit removal
         [HarmonyTranspiler]
         [HarmonyPatch(typeof(MyGlobalEncountersGenerator), "RegisterEncounter")]
-        public static IEnumerable<CodeInstruction> MyGlobalEncountersGenerator_RegisterEncounter_Transpiler(IEnumerable<CodeInstruction> instructions)
-            => MyPatchUtilities.ExecuteTranspilerPatch(instructions,
+        public static IEnumerable<CodeInstruction> MyGlobalEncountersGenerator_RegisterEncounter_Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator ilGenerator)
+        {
+            var maxTimer = ilGenerator.DeclareLocal(typeof(int));
+            return MyPatchUtilities.ExecuteTranspilerPatch(instructions,
                 // #1 - max timer clamp removal
                 new MyTranspilerReplacementPattern(
                     targetPattern:
                     new List<CodeInstruction>()
                     {
-                        new CodeInstruction(OpCodes.Ldc_I4_S, (sbyte) 91), // loads lower bound for maximum timer
-                        new CodeInstruction(OpCodes.Ldc_I4, 180), // loads upper bound
+                        new CodeInstruction(OpCodes.Ldc_I4_S, (sbyte) 21), // loads lower bound for maximum timer
+                        new CodeInstruction(OpCodes.Ldc_I4, 1440), // loads upper bound
                         new CodeInstruction(OpCodes.Call, typeof(MyUtils).GetMethod("GetClampInt")) // pops 3 (max, min, original), pushes clamped result
                     },
                     replacementSequence:
-                    new List<CodeInstruction>()), // just don't do anything here, this will leave us with the original int32 on the stack and the following code has no clue it wasn't clamped
+                    new List<CodeInstruction>()
+                    {
+                        new CodeInstruction(OpCodes.Dup), // duplicate the resulting max timer
+                        new CodeInstruction(OpCodes.Stloc, maxTimer), // store one copy into our local for later use
+                        // ... stloc of clamped max timer consumes topmost stack value (dup'ed max timer)
+                    }),
                 // #2 - min timer clamp adjustment
                 new MyTranspilerReplacementPattern(
                     targetPattern:
                     new List<CodeInstruction>()
                     {
                         new CodeInstruction(OpCodes.Ldfld, typeof(MyObjectBuilder_SessionSettings).GetField("GlobalEncounterMinRemovalTimer")), // loads setting for minimum timer
-                        new CodeInstruction(OpCodes.Ldc_I4_S, (sbyte) 90) // loads lower bound
-                        // .. next instruction is a local variable load to recall the maximum timer value, we want to keep that
+                        new CodeInstruction(OpCodes.Ldc_I4_S, (sbyte) 20), // loads lower bound
+                        new CodeInstruction(OpCodes.Ldc_I4, 1440) // loads upper bound
+                        // ... next instruction is the clamp call
                     },
                     replacementSequence:
                     new List<CodeInstruction>()
                     {
                         new CodeInstruction(OpCodes.Ldfld, typeof(MyObjectBuilder_SessionSettings).GetField("GlobalEncounterMinRemovalTimer")), // still load the setting - only for ensuring correct IL is changed
-                        new CodeInstruction(OpCodes.Ldc_I4_S, (sbyte) 0) // load the lower bound as 0 instead
-                        // .. still recall the max value
-                        // .. still execute that clamp
+                        new CodeInstruction(OpCodes.Ldc_I4_S, (sbyte) 0), // load the lower bound as 0 instead
+                        new CodeInstruction(OpCodes.Ldloc, maxTimer) // load our stored max timer as upper bound
+                        // ... still execute that clamp
                     })
                 );
+        }
         #endregion
 
         #region Spawn limiting
