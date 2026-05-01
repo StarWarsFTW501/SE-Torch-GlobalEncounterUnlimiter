@@ -111,7 +111,7 @@ namespace GlobalEncounterUnlimiter
                     {
                         if (!File.Exists(_filePath))
                             Plugin.Instance.Logger.Info($"GPS Synchronizer image not found for overwrite at '{_filePath}'. A new file will be created.");
-                        using (var fileStream = File.OpenWrite(_filePath))
+                        using (var fileStream = File.Create(_filePath))
                         {
                             _xmlSerializer.Serialize(fileStream, this);
                             Plugin.Instance.Logger.Info($"GPS Synchronizer image successfully saved to '{_filePath}'.");
